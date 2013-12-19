@@ -19,7 +19,7 @@ class Graph{
 		// use vector to implement a matrix
 	public:
 		vector< vector<int> > vec; // Matrix used to store the value of edges
-		vector< int > nodes; // Store the value for each node
+		vector< vector<int> > nodes; // Store the value for each node
 		explicit Graph(int size);
 		int get_number_nodes(Graph G); // Return the number of vertices
 		int get_number_edges(Graph G); // Return the number of edges
@@ -40,16 +40,18 @@ Graph::Graph(int size)
 	for(int i = 0; i < N; ++i)
 		vec[i].resize(N);
 	nodes.resize(N);
+	for(int i = 0; i < N; ++i)
+		nodes[i].resize(1);
 };
 
 void Graph::set_node_value(Node x,value v)
 {
-	this->nodes[x] = v;
+	this->nodes[x][0] = v;
 };
 
 int Graph::get_node_value(Node x)
 {
-	return this->nodes[x];
+	return this->nodes[x][0];
 
 };
 
@@ -76,10 +78,13 @@ vector<int> Graph::neighbors(Node x)
 {
 	vector< int > neigh;
 	assert( x < this->vec.size()); // check whether it exceeds the bound
-	for(int i=0; i <=this->vec[x].size(); ++i)
+	for(int i=0; i <this->vec[x].size(); ++i)
 	{
-		if( this->adjacent(x,i))
-			neigh.push_back(i);// add the index to the vector to store the value
+		if( x != i )
+		{	
+			if( this->adjacent(x,i) )
+				neigh.push_back(i);// add the index to the vector to store the value
+		}
 	}
 	
 	for(int i=0; i<neigh.size(); ++i) // sort the neighbor nodes in terms of the increasing distance
@@ -97,10 +102,10 @@ vector<int> Graph::neighbors(Node x)
 };
 
 
-class PriorityQueue:public Graph
+class PriorityQueue://public Graph
 {
 	public:
-		explicit PriorityQueue(int x):Graph(x) {}; // inherit the constructor from Graph
+		//explicit PriorityQueue(int x):Graph(x) {}; // inherit the constructor from Graph
 		vector< int > PQ;
 		void chgPriority(Node n,int val)
 		{
@@ -110,7 +115,7 @@ class PriorityQueue:public Graph
 			this->PQ[n] = val;
 		};
 
-		void minPriority(PriorityQueue)
+		void minPriority()
 		{
 			/*
 			 * remove the first element in the queue
@@ -157,12 +162,17 @@ class ShortestPath//:public PriorityQueue
 			this->input = g;
 		};
 		//explicit ShortestPath(int x):PriorityQueue(x) {};*/
-		vector<int> nds;
+		
+		vector< vector<int> > nds;
 		void vertices(Graph g)
 		{
 			this->nds = g.nodes;
 		};
-
+		
+		vector< int> path(Node u,Node w)
+		{
+			
+		};
 };
 
 
@@ -183,15 +193,20 @@ Graph creat_graph(double density,int range)
 	{
 		int i = rand() % N;
 		int j = rand() % N;
-		while(i ==j) { j = rand() % N;}
+		while(i == j) { j = rand() % N;}
 		if(g.get_edge_value(i,j) == 0)
 		{
 			int val = rand() % range +1;
 			g.set_edge_value(i,j,val);
 			num_of_edges += 1;
-			D = num_of_edges / total_of_edges;
+			D = static_cast <int> (num_of_edges / total_of_edges);
 		};
-	};/*
+	};
+	for(int i=0;i<g.nodes.size();++i)
+		g.nodes[i][0] = 0;
+	/*
+        for(int i=0;i < g.nodes.size() ;++i)
+		cout << g.nodes[i][0] << '\n'; 
 	PriorityQueue g(N);
 	for(int i=0;i<g.vec.size();++i)
 	{
@@ -215,6 +230,21 @@ Graph creat_graph(double density,int range)
 	return g;
 };
 
+vector<int > ShortPath(Graph g, Node x, Node y)
+{
+	vector<int> Queue_s = g.neighbour(x);
+	PriorityQueue qu;
+	qu.PQ = Queue_s
+	vector<int> Queue_b;	
+	for(vector<int>::iterator it=Queue_s.begin();it != Queue_s.end();++it)
+	{
+		if (! qu.contain(*it))
+			Queue_b.push_back(*it);
+	}
+
+
+
+};
 
 int main()
 {
@@ -229,10 +259,10 @@ int main()
 			cout << g.vec[i][j] << ' ';
 		cout << '\n';
 	};
-	ShortestPath sp;
+	/*ShortestPath sp;
 	sp.vertices(g);
 	for(int i=0;i<sp.nds.size();++i)
-		cout << "Node " << i <<'\n';
+		cout << "Node " << i <<'\n';*/
 	return 0;
 }
 
